@@ -1,7 +1,6 @@
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -9,7 +8,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.*;
 
 public class Main {
 
@@ -21,14 +19,8 @@ public class Main {
     }
 
     public static void main(String[] args) throws IOException, URISyntaxException {
-        ArrayList<String> arrayList = new ArrayList<>();
-        Document page = getPage();
-        Elements element = page.getElementsByClass("item-details");
-        for (Element aElement: element) {
-            arrayList.add(element.select("h3").text());
-            arrayList.add(element.select("p[class=original-price]").text());
-            arrayList.add(element.select("p[class=current-price]").text());
-        }
+        Document document = getPage();
+
         FileWriter file = null;
         try {
             file = new FileWriter("products.csv");
@@ -37,12 +29,12 @@ public class Main {
             e.printStackTrace();
         }
         PrintWriter write = new PrintWriter(file);
-        for (String name: arrayList) {
-            write.println(name);
+        for (Element element: document.getElementsByClass("item-details")) {
+            Product product = new Product(element.select("h3").text(), element.select("p[class=original-price]").text(), element.select("p[class=current-price]").text());
+            write.println(product);
         }
         write.close();
     }
 }
-
 
 
